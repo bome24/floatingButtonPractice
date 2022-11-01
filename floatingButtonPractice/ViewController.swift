@@ -38,13 +38,43 @@ class ViewController: UIViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
     // Do any additional setup after loading the view.
-    }
+  }
     
-    @IBAction func floatingButtonAction(_ sender: Any) {
-        if isFloating {
-            
+  @IBAction func floatingButtonAction(_ sender: UIButton) {
+    if isFloating {
+      buttonList.reversed().forEach { button in
+        UIView.animate(withDuration: 0.3) {
+          button.isHidden = true
+          self.view.layoutIfNeeded()
         }
+      }
+      UIView.animate(withDuration: 0.5, animations: {
+        self.floatingDimView.alpha = 0
+      }) { (_) in
+        self.floatingDimView.isHidden = true
+      }
+    } else {
+      self.floatingDimView.isHidden = false
+      UIView.animate(withDuration: 0.5) {
+        self.floatingDimView.alpha = 1
+      }
+      buttonList.forEach { [weak self] button in
+        button.isHidden = false
+        button.alpha = 0
+        UIView.animate(withDuration: 0.3) {
+          button.alpha = 1
+          self?.view.layoutIfNeeded()
+        }
+      }
     }
+    isFloating = !isFloating
     
+    let image = isFloating ? UIImage(named: "Hide") : UIImage(named: "Show")
+    let roatation = isFloating ? CGAffineTransform(rotationAngle: .pi - (.pi / 4)) : CGAffineTransform.identity
+    UIView.animate(withDuration: 0.3) {
+      sender.setImage(image, for: .normal)
+      sender.transform = roatation
+    }
+  }
 }
 
